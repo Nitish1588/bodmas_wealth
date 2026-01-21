@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "157565314528",
+    "project_id": "bodmas-wealth",
+    "storage_bucket": "bodmas-wealth.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:157565314528:android:d2cd74b2b5b9671675b785",
+        "android_client_info": {
+          "package_name": "com.example.bodmas_wealth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "157565314528-pu72q7h6o19jv42vmuohf6q03126ndia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bodmas_wealth",
+            "certificate_hash": "408cccb734f8431b661a893309aedc0b2306153a"
+          }
+        },
+        {
+          "client_id": "157565314528-llf0pv7rf9r5jr1eq9a8drp4qdv9g2fe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDyANZmWfVgefU7Hw__ILUpawzWji77MY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "157565314528-llf0pv7rf9r5jr1eq9a8drp4qdv9g2fe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
