@@ -102,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
             label: "demo",       // Loans tab (placeholder label)
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.square),
             label: "Property",   // Property browse tab
           ),
           BottomNavigationBarItem(

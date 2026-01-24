@@ -24,7 +24,7 @@ class _PropertyBrowseScreenState extends State<PropertyBrowseScreen> {
         title: const Text("Properties"),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_alt_rounded),
             onPressed: () {
               showModalBottomSheet(
                 context: context,
