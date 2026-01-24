@@ -1,10 +1,15 @@
 import 'package:bodmas_wealth/core/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+/// ===========================
+/// ADD PROPERTY SCREEN
+/// ===========================
+/// Screen for adding new properties with images, details, and amenities
 class AddPropertyScreen extends StatefulWidget {
   const AddPropertyScreen({super.key});
 
@@ -13,12 +18,14 @@ class AddPropertyScreen extends StatefulWidget {
 }
 
 class _AddPropertyScreenState extends State<AddPropertyScreen> {
+  // Selected property images from device
   List<File> selectedImages = [];
   final ImagePicker picker = ImagePicker();
 
+  // Form key for validation
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
+  // Controllers for input fields
   final titleCtrl = TextEditingController();
   final cityCtrl = TextEditingController();
   final localityCtrl = TextEditingController();
@@ -28,22 +35,25 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   final bathCtrl = TextEditingController();
   final ownerCtrl = TextEditingController();
 
-  // Dropdown / Switch values
+  // Dropdown / Switch default values
   String listingType = "Buy";
   String propertyType = "Apartment";
   String furnishing = "Semi Furnished";
   String facing = "East";
   String postedBy = "Agent";
 
-  bool isNew = false;
-  bool readyToMove = true;
-  bool verified = false;
+  bool isNew = false; // Indicates if property is newly constructed
+  bool readyToMove = true; // Indicates if property is ready to move
+  bool verified = false; // Indicates if property is verified by admin
 
-  List<String> amenities = [];
+  List<String> amenities = []; // Selected amenities
 
-  bool loading = false;
+  bool loading = false; // Loading state during submission or upload
 
-  // Pick multiple images
+  /// ===========================
+  /// IMAGE PICKING FUNCTION
+  /// ===========================
+  /// Opens device gallery to pick multiple images
   Future<void> pickImages() async {
     final List<XFile> images = await picker.pickMultiImage(imageQuality: 70);
 
@@ -54,7 +64,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     }
   }
 
-  // Upload multiple images to Firebase Storage
+  /// ===========================
+  /// IMAGE UPLOAD FUNCTION
+  /// ===========================
+  /// Uploads selected images to Firebase Storage and returns download URLs
   Future<List<String>> uploadImagesToStorage() async {
     List<String> urls = [];
 
@@ -72,6 +85,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     return urls;
   }
 
+  /// ===========================
+  /// SUBMIT PROPERTY FUNCTION
+  /// ===========================
+  /// Validates form, uploads images, and adds property to Firestore
   Future<void> submitProperty() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -83,20 +100,20 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         imageUrls = await uploadImagesToStorage();
       } catch (e) {
         debugPrint("Image upload failed: $e");
-        // Optional: show snackbar but continue
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Image upload failed, proceeding without images")),
         );
       }
     }
 
+    // Add property document to Firestore
     await FirebaseFirestore.instance.collection("properties").add({
       "title": titleCtrl.text.trim(),
       "city": cityCtrl.text.trim(),
       "locality": localityCtrl.text.trim(),
       "price": int.parse(priceCtrl.text),
       "areaSqft": int.parse(areaCtrl.text),
-      "coverImage": imageUrls.isEmpty ? null : imageUrls,  // allow null
+      "coverImage": imageUrls.isEmpty ? null : imageUrls,  // Can be null
       "hasMedia": imageUrls.isNotEmpty,
       "createdAt": FieldValue.serverTimestamp(),
       "listingType": listingType,
@@ -110,6 +127,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       "verified": verified,
       "amenities": amenities,
       "postedBy": postedBy,
+      "postedById": FirebaseAuth.instance.currentUser!.uid,
+
       "ownerName": ownerCtrl.text.trim(),
       "availability": "Available"
     });
@@ -120,10 +139,13 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       const SnackBar(content: Text("Property Added Successfully")),
     );
 
-    clearForm();
+    clearForm(); // Clear form after submission
   }
 
-
+  /// ===========================
+  /// CLEAR FORM
+  /// ===========================
+  /// Resets all input fields, dropdowns, checkboxes, and images
   void clearForm() {
     FocusScope.of(context).unfocus();
 
@@ -168,6 +190,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Section: Property Images
               const Text(
                 "Property Images",
                 style: TextStyle(color: Colors.white),
@@ -209,7 +232,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 12),
+
+              // Dropdowns: Listing Type, Property Type
               darkDropdown("Listing Type", listingType,
                   ["Buy", "Rent", "PG"], (v) {
                     setState(() => listingType = v);
@@ -219,6 +245,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                       (v) {
                     setState(() => propertyType = v);
                   }),
+
+              // Text fields: Title, City, Locality, Price, Area, BHK, Bathrooms, Owner Name
               darkTextField("Title", titleCtrl),
               darkTextField("City", cityCtrl),
               darkTextField("Locality", localityCtrl),
@@ -230,6 +258,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   keyboard: TextInputType.number),
               darkTextField("Bathrooms", bathCtrl,
                   keyboard: TextInputType.number),
+
+              // Dropdowns: Furnishing, Facing
               darkDropdown("Furnishing", furnishing,
                   ["Unfurnished", "Semi Furnished", "Fully Furnished"],
                       (v) {
@@ -239,14 +269,21 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   ["East", "West", "North", "South"], (v) {
                     setState(() => facing = v);
                   }),
+
+              // Owner Name
               darkTextField("Owner / Agent Name", ownerCtrl),
+
+              // Checkboxes: New Property, Ready to Move, Verified
               darkCheckbox("New Property", isNew,
                       (v) => setState(() => isNew = v)),
               darkCheckbox("Ready to Move", readyToMove,
                       (v) => setState(() => readyToMove = v)),
               darkCheckbox("Verified", verified,
                       (v) => setState(() => verified = v)),
+
               const SizedBox(height: 10),
+
+              // Amenities
               const Text(
                 "Amenities",
                 style: TextStyle(color: Color(0xFFFFFFFF)),
@@ -277,7 +314,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   );
                 }).toList(),
               ),
+
               const SizedBox(height: 15),
+
+              // Submit Button
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF9144FF),
@@ -294,6 +334,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     );
   }
 
+  /// ===========================
+  /// TEXT FIELD WIDGET
+  /// ===========================
   Widget darkTextField(String label, TextEditingController ctrl,
       {TextInputType keyboard = TextInputType.text}) {
     return Padding(
@@ -326,6 +369,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     );
   }
 
+  /// ===========================
+  /// DROPDOWN WIDGET
+  /// ===========================
   Widget darkDropdown(String label, String value, List<String> items,
       Function(String) onChanged) {
     return Padding(
@@ -363,6 +409,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     );
   }
 
+  /// ===========================
+  /// CHECKBOX WIDGET
+  /// ===========================
   Widget darkCheckbox(String title, bool value, Function(bool) onChanged) {
     return CheckboxListTile(
       title: Text(title, style: const TextStyle(color: Color(0xFFFFFFFF))),

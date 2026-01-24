@@ -1,4 +1,5 @@
 import 'package:bodmas_wealth/auth/auth_service.dart';
+import 'package:bodmas_wealth/home/widgets/LatestListingsWidget.dart';
 import 'package:bodmas_wealth/home/widgets/property_list.dart';
 import 'package:bodmas_wealth/home/widgets/property_search.dart';
 import 'package:bodmas_wealth/main_screen.dart';
@@ -7,8 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 import '../core/colors.dart';
-class HomeScreen extends StatefulWidget {
 
+/// HomeScreen displays the main content of the app, including:
+/// - Banner image and title
+/// - Features and stats
+/// - Contact button
+/// - Latest property listings
+/// - Property search with results
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
@@ -16,11 +23,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Query? _query;
-  int? _budget;
-  String? _type;
-  bool _showResult = false;
+  Query? _query;       // Stores Firestore query for search results
+  int? _budget;        // Stores budget from search
+  String? _type;       // Stores property type from search (BHK/RK)
+  bool _showResult = false; // Toggle to show/hide search results
 
+  /// Callback passed to PropertySearch widget
+  /// Updates query, budget, type and shows result section
   void onSearch(Query q, int budget, String? type) {
     setState(() {
       _query = q;
@@ -30,9 +39,16 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  /// Firestore query to fetch latest 5 properties
+  final latestPropertiesQuery = FirebaseFirestore.instance
+      .collection('properties')
+      .orderBy('createdAt', descending: true)
+      .limit(5);
 
-
+  /// Customer support phone number
   final String phoneNumber = '+919170051973';
+
+  /// Launch phone dialer with pre-filled number
   void _callNumber() async {
     final Uri launchUri = Uri(
       scheme: 'tel',
@@ -51,22 +67,18 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.primary,
       appBar: AppBar(title: const Text("Home")),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(20,2,20,0),
+        padding: const EdgeInsets.fromLTRB(20, 2, 20, 0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-
-
-
-
-
               const SizedBox(height: 10),
-              // IMAGE
+
+              /// Banner Image
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
-                  "assets/images/home_image.jpg", // replace if needed
+                  "assets/images/home_image.jpg",
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -75,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 16),
 
-              // TITLE
+              /// Title with gradient colors for emphasis
               RichText(
                 text: TextSpan(
                   style: const TextStyle(
@@ -101,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 10),
 
-              // SUBTITLE
+              /// Subtitle / description
               const Text(
                 "Apply for an Online Personal Loan at low interest rates and get instant approval.",
                 style: TextStyle(
@@ -112,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 16),
 
-              // FEATURES
+              /// Features Row (Quick Process, No Hidden Fees, Flexible Terms)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
@@ -140,12 +152,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
 
-
-
-
               const SizedBox(height: 18),
 
-              // CONTACT BUTTON
+              /// Contact Us Button
               SizedBox(
                 width: double.infinity,
                 height: 48,
@@ -169,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               const SizedBox(height: 18),
 
-              // STATS
+              /// Stats Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
@@ -212,20 +221,43 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
+              /// Section Title: Latest Listings
+              const Text(
+                "Latest Listings",
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              const SizedBox(height: 5),
 
-              // logo here with gradient and container
+              /// Latest Listings Widget (scrollable)
+              Container(
+                height: MediaQuery.of(context).size.height * 0.45, // fixed height
+                decoration: BoxDecoration(
+                  color: Color(0x01FFFFFF),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.all(1.0),
+                    child: LatestListingsWidget(),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              /// Logo with gradient background
               Container(
                 width: 150,
-                // height: 64,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
-
                       Color(0xFFB974FF),
                       Color(0xFFFFFFFF),
-
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -241,6 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 10),
+
               const Text(
                 "Start Your Property Hunt",
                 style: TextStyle(
@@ -251,100 +284,33 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 15),
 
+              /// Property Search Widget
               PropertySearch(onSearch: onSearch),
-              // 📦 SEARCH RESULT SECTION
+
+              /// Search Result Section
               if (_showResult && _query != null && _budget != null)
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.45, // 👈 fixed height
+                  height: MediaQuery.of(context).size.height * 0.45,
                   margin: const EdgeInsets.only(top: 8),
                   decoration: BoxDecoration(
                     color: Color(0x08ffffff),
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(10),
                       bottom: Radius.circular(10),
-
                     ),
                   ),
-                  child: PropertyList(query: _query!,     // 🔥 yahin se aata hai
-                    budget: _budget!,   // 🔥 yahin se aata hai
-                    type: _type,   ),
-                ),
-
-
-
-
-              const SizedBox(height: 30),
-
-              SizedBox(
-                width: 200, // Sets the width
-                height: 50, //
-                child: ElevatedButton(
-                  onPressed: () async{
-
-                    await AuthService().logout();
-
-
-
-                    //Navigator.pushNamed(context, AppRoutes.home);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Log Out Successfully")),
-                    );
-                  },
-
-                  style: ElevatedButton.styleFrom(
-                    // Set the background color of the button
-                    backgroundColor: Color(0xFF9144FF),
-
-                    // Set the text color (foreground color)
-                    foregroundColor: Color(0xFFDDDDDD),
-                    textStyle: TextStyle(
-                      fontSize: 15.0, //  font size here
-                      fontWeight: FontWeight.w500,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
+                  child: PropertyList(
+                    query: _query!,   // Search results Firestore query
+                    budget: _budget!, // Filtered budget
+                    type: _type,      // Filtered property type (optional)
                   ),
-                  child: const Text("Log Out"),
                 ),
-              ),
 
-              const SizedBox(height: 10),
-
-              SizedBox(
-                width: double.infinity, // Sets the width
-                height: 50, // Optional: specify a fixed height
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainScreen()),
-                    );
-
-                  },
-                  style: ElevatedButton.styleFrom(
-                    // Set the background color of the button
-                    backgroundColor: Color(0xFFFFFFFF),
-
-                    // Set the text color (foreground color)
-                    foregroundColor: Color(0xFF9144FF),
-                    textStyle: TextStyle(
-                      fontSize: 15.0, //  font size here
-                      fontWeight: FontWeight.w500,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                  child: const Text("main"),
-                ),
-              ),
               const SizedBox(height: 5),
             ],
           ),
         ),
       ),
-
     );
   }
 }

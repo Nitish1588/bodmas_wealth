@@ -1,4 +1,3 @@
-
 import 'package:bodmas_wealth/auth/otp_screen.dart';
 import 'package:flutter/material.dart';
 import 'widgets/auth_text_field.dart';
@@ -6,9 +5,9 @@ import 'widgets/terms_checkbox.dart';
 import 'auth_service.dart';
 import '../core/colors.dart';
 
-
-
-// Signup screen with name and mobile no
+// =========================
+// SIGNUP SCREEN
+// =========================
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -17,40 +16,46 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  String? _userType; // "user" or "dealer"
-
+  String? _userType; // "buyer" or "dealer"
 
   final _formKey = GlobalKey<FormState>();
 
+  // Controllers for user input fields
   final _name = TextEditingController();
   final _mobile = TextEditingController();
   final _email = TextEditingController();
-  //final _occupation = TextEditingController();
+  // final _occupation = TextEditingController(); // Optional, commented out
 
   final _password = TextEditingController();
   final _confirmPassword = TextEditingController();
 
-  final _authService = AuthService();
+  final _authService = AuthService(); // Auth service instance
 
-  bool _accepted = false;
-  bool _loading = false;
+  bool _accepted = false; // Terms & Conditions checkbox state
+  bool _loading = false;  // Loading state for signup button
 
-  // signup action
+  // =========================
+  // SIGNUP ACTION
+  // =========================
   void _handleSignup() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return; // Validate all fields
 
     if (!_accepted) {
+      // Ensure terms are accepted
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Accept Terms first")));
       return;
     }
 
     if (_password.text != _confirmPassword.text) {
+      // Ensure passwords match
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Passwords not match")));
       return;
     }
+
     if (_userType == null) {
+      // Ensure user type is selected
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please select User Type")),
       );
@@ -60,32 +65,29 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => _loading = true);
 
     try {
+      // Call AuthService to create user
       await _authService.signup(
         name: _name.text.trim(),
         mobile: _mobile.text.trim(),
         email: _email.text.trim(),
-
-       // occupation: _occupation.text.trim(),
+        // occupation: _occupation.text.trim(),
         password: _password.text.trim(),
-          userType: _userType!
+        userType: _userType!,
       );
 
       if (!mounted) return;
-      // GO TO OTP SCREEN
+
+      // Navigate to OTP screen for phone verification
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => OtpScreen(
-            phone: '+91${_mobile.text.trim()}', // Passing argument directly
+            phone: '+91${_mobile.text.trim()}', // Pass phone with country code
           ),
         ),
       );
-
-      // ScaffoldMessenger.of(context)
-       //   .showSnackBar(const SnackBar(content: Text("Signup Successful")));
-
-      //Navigator.pop(context);
     } catch (e) {
+      // Show error message if signup fails
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
@@ -95,10 +97,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: AppColors.primary,
-      appBar: AppBar(title: Text('Signup')),
+      appBar: AppBar(title: const Text('Signup')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -106,18 +107,26 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             children: [
               const SizedBox(height: 12),
-              AuthTextField(label: "Name", controller: _name),
 
+              // =========================
+              // NAME FIELD
+              // =========================
+              AuthTextField(label: "Name", controller: _name),
               const SizedBox(height: 12),
 
+              // =========================
+              // MOBILE NUMBER FIELD
+              // =========================
               AuthTextField(
                 label: "Mobile No",
                 controller: _mobile,
                 keyboardType: TextInputType.phone,
               ),
-
               const SizedBox(height: 12),
 
+              // =========================
+              // EMAIL FIELD
+              // =========================
               AuthTextField(
                 label: "Email",
                 controller: _email,
@@ -125,6 +134,9 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 12),
 
+              // =========================
+              // USER TYPE SELECTION
+              // =========================
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -136,17 +148,13 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 8),
 
               SizedBox(
                 width: double.infinity,
                 child: SegmentedButton<String>(
                   showSelectedIcon: false,
-
-                  // 👇 yeh dono segments ko equal width deta hai
                   expandedInsets: EdgeInsets.zero,
-
                   segments: const [
                     ButtonSegment(
                       value: "buyer",
@@ -166,67 +174,59 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.resolveWith((states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return Colors.white;
-                      }
-                      return Colors.white.withValues(alpha: 0.3);
+                      return states.contains(WidgetState.selected)
+                          ? Colors.white
+                          : Colors.white.withAlpha(80);
                     }),
                     foregroundColor: WidgetStateProperty.resolveWith((states) {
-                      if (states.contains(WidgetState.selected)) {
-                        return const Color(0xFF9144FF);
-                      }
-                      return Colors.white;
+                      return states.contains(WidgetState.selected)
+                          ? const Color(0xFF9144FF)
+                          : Colors.white;
                     }),
                   ),
                 ),
               ),
-
-
               const SizedBox(height: 12),
 
-
-
-              // AuthTextField(label: "Occupation", controller: _occupation),
-
-             // const SizedBox(height: 12),
-
+              // =========================
+              // PASSWORD FIELDS
+              // =========================
               AuthTextField(
                 label: "Create Password",
                 controller: _password,
                 isPassword: true,
               ),
-
               const SizedBox(height: 12),
-
               AuthTextField(
                 label: "Confirm Password",
                 controller: _confirmPassword,
                 isPassword: true,
               ),
-
               const SizedBox(height: 5),
 
+              // =========================
+              // TERMS & CONDITIONS CHECKBOX
+              // =========================
               TermsCheckbox(
                 value: _accepted,
                 onChanged: (v) {
                   setState(() => _accepted = v!);
                 },
               ),
-
               const SizedBox(height: 5),
 
+              // =========================
+              // SIGNUP BUTTON
+              // =========================
               SizedBox(
-                width: double.infinity, // Sets the width
-                height: 50, // Optional: specify a fixed height
+                width: double.infinity,
+                height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    // Set the background color of the button
-                    backgroundColor: Color(0xFFFFFFFF),
-
-                    // Set the text color (foreground color)
-                    foregroundColor: Color(0xFF9144FF),
-                    textStyle: TextStyle(
-                      fontSize: 15.0, //  font size here
+                    backgroundColor: const Color(0xFFFFFFFF),
+                    foregroundColor: const Color(0xFF9144FF),
+                    textStyle: const TextStyle(
+                      fontSize: 15.0,
                       fontWeight: FontWeight.w500,
                     ),
                     shape: RoundedRectangleBorder(

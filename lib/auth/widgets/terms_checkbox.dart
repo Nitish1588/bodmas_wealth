@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
-// Reusable Terms & Conditions checkbox
+// Reusable Terms & Conditions checkbox widget
 class TermsCheckbox extends StatelessWidget {
 
+  // Current checkbox value (checked/unchecked)
   final bool value;
+
+  // Function jo checkbox change hone par call hoti hai
   final Function(bool?) onChanged;
 
   const TermsCheckbox({
@@ -17,23 +20,30 @@ class TermsCheckbox extends StatelessWidget {
 
     return Row(
       children: [
+        // Actual checkbox
         Checkbox(
-          value: value,
-          onChanged: onChanged,
+          value: value,           // Checkbox ka current state
+          onChanged: onChanged,   // Checkbox change hone par call hone wali function
 
-          activeColor: Color(0xFF9144FF),
-          checkColor: Color(0xFFFFFFFF),
+          // Colors
+          activeColor: Color(0xFF9144FF), // Jab checked ho
+          checkColor: Color(0xFFFFFFFF),  // Check mark color
+
+          // Border color & width
           side: BorderSide(
             color: Colors.grey,
             width: 2,
           ),
         ),
-        const Text("Accept Terms and Conditions",
-        style: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-    color: Color(0xFFD2D2DC),
-       ),
+
+        // Checkbox ke saath text
+        const Text(
+          "Accept Terms and Conditions",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFFD2D2DC),
+          ),
         ),
       ],
     );

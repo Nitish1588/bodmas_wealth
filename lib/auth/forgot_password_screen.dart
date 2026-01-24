@@ -4,7 +4,7 @@ import 'widgets/auth_text_field.dart';
 import 'auth_service.dart';
 import '../core/colors.dart';
 
-// Forgot password screen
+// Forgot Password Screen
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -14,34 +14,40 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
-  final _formKey = GlobalKey<FormState>();
-  final _email = TextEditingController();
+  final _formKey = GlobalKey<FormState>();          // Form key for validation
+  final _email = TextEditingController();           // Controller for email input
+  final _authService = AuthService();              // Instance of AuthService
 
-  final _authService = AuthService();
-
-  // reset action
+  // =========================
+  // HANDLE RESET PASSWORD
+  // =========================
   void _handleReset() async {
 
+    // Validate form fields
     if (!_formKey.currentState!.validate()) return;
 
     try {
-
+      // Call AuthService to send reset email
       await _authService.resetPassword(
         _email.text.trim(),
       );
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text("Reset Email Sent")));
+      // Show confirmation message
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Reset Email Sent"))
+      );
 
+      // Navigate back to login screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );
 
-
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      // Show error message if reset fails
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()))
+      );
     }
   }
 
@@ -49,16 +55,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: AppColors.primary, // Screen background color
       appBar: AppBar(title: const Text("Forgot Password")),
+
       body: Padding(
         padding: const EdgeInsets.all(24),
+
+        // Form to validate email input
         child: Form(
           key: _formKey,
           child: Column(
             children: [
+
               const SizedBox(height: 10),
 
+              // Reusable email input field
               AuthTextField(
                 label: "Email",
                 controller: _email,
@@ -67,18 +78,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
               const SizedBox(height: 20),
 
+              // Reset button
               SizedBox(
-                width: double.infinity, // Sets the width
-                height: 50, // Optional: specify a fixed height
+                width: double.infinity, // Full width button
+                height: 50,              // Fixed height
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    // Set the background color of the button
-                    backgroundColor: Color(0xFFFFFFFF),
-
-                    // Set the text color (foreground color)
-                    foregroundColor: Color(0xFF9144FF),
-                    textStyle: TextStyle(
-                      fontSize: 15.0, //  font size here
+                    backgroundColor: Color(0xFFFFFFFF), // Button color
+                    foregroundColor: Color(0xFF9144FF), // Text color
+                    textStyle: const TextStyle(
+                      fontSize: 15.0,
                       fontWeight: FontWeight.w500,
                     ),
                     shape: RoundedRectangleBorder(

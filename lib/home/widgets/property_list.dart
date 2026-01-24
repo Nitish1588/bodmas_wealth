@@ -1,11 +1,10 @@
 import 'package:bodmas_wealth/home/widgets/property_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 class PropertyList extends StatelessWidget {
-  final Query query;
-  final int budget;
-  final String? type;
+  final Query query;       // Firestore query for properties
+  final int budget;        // max budget filter
+  final String? type;      // optional type filter
 
   const PropertyList({
     super.key,
@@ -23,17 +22,14 @@ class PropertyList extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (!snapshot.hasData) {
-          return const SizedBox();
-        }
+        if (!snapshot.hasData) return const SizedBox();
 
-        // 🔥 CLIENT-SIDE FILTER (NO BLINK)
+        // Client-side filtering
         final filteredDocs = snapshot.data!.docs.where((doc) {
-          final price = doc['priceValue'];
+          final price = doc['priceValue'];       // price in integer
           final matchesBudget = price <= budget;
 
-          final matchesType =
-              type == null || doc['type'] == type;
+          final matchesType = type == null || doc['type'] == type;
 
           return matchesBudget && matchesType;
         }).toList();
