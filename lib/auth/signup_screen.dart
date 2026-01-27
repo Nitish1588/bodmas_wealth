@@ -158,11 +158,15 @@ class _SignupScreenState extends State<SignupScreen> {
                   segments: const [
                     ButtonSegment(
                       value: "buyer",
-                      label: Text("Property Buyer"),
+                      label: Text("Buyer"),
                     ),
                     ButtonSegment(
                       value: "dealer",
-                      label: Text("Property Dealer"),
+                      label: Text("Dealer"),
+                    ),
+                    ButtonSegment(
+                      value: "owner",
+                      label: Text("Owner"),
                     ),
                   ],
                   selected: _userType == null ? {} : {_userType!},
