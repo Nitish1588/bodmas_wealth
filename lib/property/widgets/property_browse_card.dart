@@ -1,4 +1,5 @@
 import 'package:bodmas_wealth/property/property_details_screen.dart';
+import 'package:bodmas_wealth/property_management/edit_property_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,7 +19,16 @@ class PropertyBrowseCard extends StatefulWidget {
   // Firestore property document
   final DocumentSnapshot data;
 
-  const PropertyBrowseCard({super.key, required this.data});
+  final bool showActions;
+  final void Function(DocumentSnapshot doc)? onDelete;
+
+  const PropertyBrowseCard({
+    super.key,
+    required this.data,
+    this.showActions = false,
+    this.onDelete,
+  });
+
 
   @override
   State<PropertyBrowseCard> createState() => _PropertyBrowseCardState();
@@ -89,7 +99,7 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                   borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(14)),
                   child: SizedBox(
-                    height: 200,
+                    height: 150,
                     width: double.infinity,
                     // Call image slider builder
                     child: _buildImageSlider(coverImage),
@@ -98,8 +108,8 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
 
                 /// ❤️ Wishlist button at top-right
                 Positioned(
-                  top: 10,
-                  right: 10,
+                  top: 8,
+                  right: 8,
                   child: StreamBuilder<DocumentSnapshot>(
                     // Listen to user's wishlist for this property
                     stream: FirebaseFirestore.instance
@@ -116,6 +126,7 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                         icon: Icon(
                           isFav ? Icons.favorite : Icons.favorite_border,
                           color: Colors.red,
+                          size: 20,
                         ),
                         onPressed: () async {
                           final ref = FirebaseFirestore.instance
@@ -158,7 +169,7 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                     ),
                   ),
 
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
 
                   // Location text
                   // Text("${widget.data["locality"]}, ${widget.data["city"]}"),
@@ -187,7 +198,7 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                     ],
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
 
                   /// BHK | Area | Price row
                   Row(
@@ -206,7 +217,7 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                     ],
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 6),
 
                   /// =======================
                   /// ACTION BUTTONS
@@ -216,7 +227,7 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                       /// Call Agent Button
                       Expanded(
                         child: SizedBox(
-                          height: 50,
+                          height: 40,
                           child: OutlinedButton(
                             onPressed: () {
                               // TODO: Call agent logic
@@ -235,7 +246,7 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                       /// View Details Button
                       Expanded(
                         child: SizedBox(
-                          height: 50,
+                          height: 40,
                           child: ElevatedButton(
                             onPressed: () {
                               // Navigate to Property Details screen
@@ -257,6 +268,33 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                       ),
                     ],
                   ),
+
+                  if (widget.showActions)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Color(0xFF9144FF)),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    EditPropertyScreen(propertyDoc: widget.data),
+                               //  AddPropertyScreen(propertyDoc: widget.data),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.redAccent),
+                          onPressed: () => widget.onDelete?.call(widget.data),
+                        ),
+
+                      ],
+                    ),
+
+
                 ],
               ),
             )

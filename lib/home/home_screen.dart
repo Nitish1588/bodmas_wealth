@@ -1,8 +1,6 @@
-import 'package:bodmas_wealth/auth/auth_service.dart';
 import 'package:bodmas_wealth/home/widgets/LatestListingsWidget.dart';
 import 'package:bodmas_wealth/home/widgets/property_list.dart';
 import 'package:bodmas_wealth/home/widgets/property_search.dart';
-import 'package:bodmas_wealth/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
@@ -67,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.primary,
       appBar: AppBar(title: const Text("Home")),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 2, 20, 0),
+        padding: const EdgeInsets.fromLTRB(15, 2, 15, 0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -125,29 +123,79 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
 
               /// Features Row (Quick Process, No Hidden Fees, Flexible Terms)
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: const [
+              //     Row(
+              //       children: [
+              //         Icon(Icons.check_circle, color: Color(0xFF5AF2FF), size: 18),
+              //         SizedBox(width: 6),
+              //         Text("Quick Process", style: TextStyle(color: Colors.white70)),
+              //       ],
+              //     ),
+              //     Row(
+              //       children: [
+              //         Icon(Icons.check_circle, color: Color(0xFF3DFFB7), size: 18),
+              //         SizedBox(width: 6),
+              //         Text("No Hidden Fees", style: TextStyle(color: Colors.white70)),
+              //       ],
+              //     ),
+              //     Row(
+              //       children: [
+              //         Icon(Icons.check_circle, color: Color(0xFFB97CFF), size: 18),
+              //         SizedBox(width: 6),
+              //         Text("Flexible Terms", style: TextStyle(color: Colors.white70)),
+              //       ],
+              //     ),
+              //   ],
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
-                  Row(
-                    children: [
-                      Icon(Icons.check_circle, color: Color(0xFF5AF2FF), size: 18),
-                      SizedBox(width: 6),
-                      Text("Quick Process", style: TextStyle(color: Colors.white70)),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Color(0xFF5AF2FF), size: 18),
+                        SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            "Quick Process",
+                            style: TextStyle(color: Colors.white70),
+                            overflow: TextOverflow.ellipsis, // prevents overflow
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Icon(Icons.check_circle, color: Color(0xFF3DFFB7), size: 18),
-                      SizedBox(width: 6),
-                      Text("No Hidden Fees", style: TextStyle(color: Colors.white70)),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Color(0xFF3DFFB7), size: 18),
+                        SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            "No Hidden Fees",
+                            style: TextStyle(color: Colors.white70),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Icon(Icons.check_circle, color: Color(0xFFB97CFF), size: 18),
-                      SizedBox(width: 6),
-                      Text("Flexible Terms", style: TextStyle(color: Colors.white70)),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Color(0xFFB97CFF), size: 18),
+                        SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            "Flexible Terms",
+                            style: TextStyle(color: Colors.white70),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -240,14 +288,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Color(0x01FFFFFF),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.all(1.0),
-                    child: LatestListingsWidget(),
+                child: RawScrollbar(
+                  thumbColor: Color(0xFF9144FF), // Purple color for thumb
+                  radius: Radius.circular(10),
+                  thickness: 4,
+                  thumbVisibility: false, // Always show scrollbar
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: LatestListingsWidget(),
+                    ),
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
 
               /// Logo with gradient background
@@ -299,10 +352,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       bottom: Radius.circular(10),
                     ),
                   ),
-                  child: PropertyList(
-                    query: _query!,   // Search results Firestore query
-                    budget: _budget!, // Filtered budget
-                    type: _type,      // Filtered property type (optional)
+                  child: RawScrollbar(
+                    thumbColor: Color(0xFFB974FF), // Another theme color
+                    radius: Radius.circular(10),
+                    thickness: 4,
+                    thumbVisibility: false,
+                    child: PropertyList(
+                      query: _query!,
+                      budget: _budget!,
+                      type: _type,
+                    ),
                   ),
                 ),
 

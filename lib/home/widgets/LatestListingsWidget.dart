@@ -1,4 +1,4 @@
-import 'package:bodmas_wealth/property/property_browse_card.dart';
+import 'package:bodmas_wealth/property/widgets/property_browse_card.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'lib/property/property_browse_card.dart'; // reuse your card

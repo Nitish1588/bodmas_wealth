@@ -5,9 +5,9 @@ import 'widgets/terms_checkbox.dart';
 import 'auth_service.dart';
 import '../core/colors.dart';
 
-// =========================
-// SIGNUP SCREEN
-// =========================
+/// =========================
+/// SIGNUP SCREEN
+/// =========================
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -16,56 +16,72 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  String? _userType; // "buyer" or "dealer"
+  // =========================
+  // USER TYPE SELECTION
+  // Can be "buyer", "dealer", or "owner"
+  // =========================
+  String? _userType;
 
+  // =========================
+  // FORM KEY for validation
+  // =========================
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers for user input fields
+  // =========================
+  // CONTROLLERS FOR INPUT FIELDS
+  // =========================
   final _name = TextEditingController();
   final _mobile = TextEditingController();
   final _email = TextEditingController();
-  // final _occupation = TextEditingController(); // Optional, commented out
+  // final _occupation = TextEditingController(); // Optional field, commented
 
   final _password = TextEditingController();
   final _confirmPassword = TextEditingController();
 
-  final _authService = AuthService(); // Auth service instance
+  // =========================
+  // AUTH SERVICE INSTANCE
+  // =========================
+  final _authService = AuthService();
 
-  bool _accepted = false; // Terms & Conditions checkbox state
+  // =========================
+  // UI STATE VARIABLES
+  // =========================
+  bool _accepted = false; // Terms & Conditions checkbox
   bool _loading = false;  // Loading state for signup button
 
   // =========================
-  // SIGNUP ACTION
+  // SIGNUP FUNCTION
+  // Validates inputs and calls AuthService
   // =========================
   void _handleSignup() async {
-    if (!_formKey.currentState!.validate()) return; // Validate all fields
+    // 1. Validate form fields
+    if (!_formKey.currentState!.validate()) return;
 
+    // 2. Check if terms are accepted
     if (!_accepted) {
-      // Ensure terms are accepted
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Accept Terms first")));
       return;
     }
 
+    // 3. Check if passwords match
     if (_password.text != _confirmPassword.text) {
-      // Ensure passwords match
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Passwords not match")));
       return;
     }
 
+    // 4. Ensure user type is selected
     if (_userType == null) {
-      // Ensure user type is selected
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select User Type")),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Please select User Type")));
       return;
     }
 
-    setState(() => _loading = true);
+    setState(() => _loading = true); // Show loading state
 
     try {
-      // Call AuthService to create user
+      // Call AuthService to register the user
       await _authService.signup(
         name: _name.text.trim(),
         mobile: _mobile.text.trim(),
@@ -82,17 +98,17 @@ class _SignupScreenState extends State<SignupScreen> {
         context,
         MaterialPageRoute(
           builder: (context) => OtpScreen(
-            phone: '+91${_mobile.text.trim()}', // Pass phone with country code
+            phone: '+91${_mobile.text.trim()}', // Pass mobile with country code
           ),
         ),
       );
     } catch (e) {
-      // Show error message if signup fails
+      // Show error if signup fails
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
     }
 
-    setState(() => _loading = false);
+    setState(() => _loading = false); // Reset loading state
   }
 
   @override
@@ -100,10 +116,11 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       backgroundColor: AppColors.primary,
       appBar: AppBar(title: const Text('Signup')),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
-          key: _formKey,
+          key: _formKey, // Form key for validation
           child: Column(
             children: [
               const SizedBox(height: 12),
@@ -135,7 +152,7 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 12),
 
               // =========================
-              // USER TYPE SELECTION
+              // USER TYPE SELECTION (Buyer/Dealer/Owner)
               // =========================
               Align(
                 alignment: Alignment.centerLeft,
@@ -178,11 +195,13 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.resolveWith((states) {
+                      // White if selected, semi-transparent if not
                       return states.contains(WidgetState.selected)
                           ? Colors.white
                           : Colors.white.withAlpha(80);
                     }),
                     foregroundColor: WidgetStateProperty.resolveWith((states) {
+                      // Purple text if selected, white if not
                       return states.contains(WidgetState.selected)
                           ? const Color(0xFF9144FF)
                           : Colors.white;
@@ -237,7 +256,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  onPressed: _loading ? null : _handleSignup,
+                  onPressed: _loading ? null : _handleSignup, // Disable when loading
                   child: const Text("Signup"),
                 ),
               ),

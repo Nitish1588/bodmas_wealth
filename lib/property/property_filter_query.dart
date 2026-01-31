@@ -18,8 +18,8 @@ Query buildFirestoreQuery(PropertyFilter f) {
     q = q.where("verified", isEqualTo: true);
   }
 
-  if (f.withMedia) {
-    q = q.where("hasMedia", isEqualTo: true);
+  if (f.readyToMove) {
+    q = q.where("readyToMove", isEqualTo: true);
   }
 
   // ONLY ONE RANGE → PRICE

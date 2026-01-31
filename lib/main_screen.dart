@@ -1,7 +1,6 @@
-import 'package:bodmas_wealth/add_property_screen.dart';
 import 'package:bodmas_wealth/home/home_screen.dart';
-import 'package:bodmas_wealth/loans_screen.dart';
 import 'package:bodmas_wealth/property/property_browse_screen.dart';
+import 'package:bodmas_wealth/property_management/add_property_screen.dart';
 import 'package:bodmas_wealth/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
   /// instead of rebuilding each time a tab is selected
   final List<Widget> _screens = const [
     HomeScreen(),            // Home tab
-    LoansScreen(),           // Loans tab
+
     PropertyBrowseScreen(),  // Property browse tab
     AddPropertyScreen(),     // Add new property tab
     UserProfileScreen(),     // User profile tab
@@ -97,10 +96,7 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.home),
             label: "Home",       // Home tab
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.square),
-            label: "demo",       // Loans tab (placeholder label)
-          ),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.square),
             label: "Property",   // Property browse tab

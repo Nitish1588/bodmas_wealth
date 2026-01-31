@@ -4,7 +4,7 @@ class PropertyFilter {
   int? bhk;
   String? propertyType;
   bool verifiedOnly;
-  bool withMedia;
+  bool readyToMove;
 
   // Firestore range (ONLY PRICE)
   int minPrice;
@@ -20,7 +20,7 @@ class PropertyFilter {
     this.bhk,
     this.propertyType,
     this.verifiedOnly = false,
-    this.withMedia = false,
+    this.readyToMove = false,
     this.minPrice = 0,
     this.maxPrice = 100000000,
     this.minArea = 0,
@@ -34,7 +34,7 @@ class PropertyFilter {
       bhk: bhk,
       propertyType: propertyType,
       verifiedOnly: verifiedOnly,
-      withMedia: withMedia,
+      readyToMove: readyToMove,
       minPrice: minPrice,
       maxPrice: maxPrice,
       minArea: minArea,

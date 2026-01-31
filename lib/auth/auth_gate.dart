@@ -28,9 +28,16 @@ class AuthGate extends StatelessWidget {
           // Navigate to main app screen
           // Using Navigator here to prevent "setState called after dispose" issues sometimes
           return Navigator(
+            key: GlobalKey<NavigatorState>(), // Unique key for nested navigator
             onGenerateRoute: (settings) {
               return MaterialPageRoute(
-                builder: (_) => MainScreen(), // Main app screen after login
+                builder: (_) => Navigator(
+                  onGenerateRoute: (innerSettings) {
+                    return MaterialPageRoute(
+                      builder: (_) => MainScreen(),
+                    );
+                  },
+                ),
               );
             },
           );

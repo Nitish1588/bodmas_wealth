@@ -1,4 +1,5 @@
 import 'package:bodmas_wealth/core/colors.dart';
+import 'package:bodmas_wealth/property_management/widgets/property_form_widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -73,7 +74,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
     for (var image in selectedImages) {
       final fileName =
-          "properties/${DateTime.now().millisecondsSinceEpoch}.jpg";
+          "properties/${DateTime
+          .now()
+          .millisecondsSinceEpoch}.jpg";
       final ref = FirebaseStorage.instance.ref().child(fileName);
       UploadTask uploadTask = ref.putFile(image);
       TaskSnapshot snapshot = await uploadTask;
@@ -100,8 +103,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         imageUrls = await uploadImagesToStorage();
       } catch (e) {
         debugPrint("Image upload failed: $e");
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Image upload failed, proceeding without images")),
+          const SnackBar(
+              content: Text("Image upload failed, proceeding without images")),
         );
       }
     }
@@ -113,7 +118,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       "locality": localityCtrl.text.trim(),
       "price": int.parse(priceCtrl.text),
       "areaSqft": int.parse(areaCtrl.text),
-      "coverImage": imageUrls.isEmpty ? null : imageUrls,  // Can be null
+      "coverImage": imageUrls.isEmpty ? null : imageUrls, // Can be null
       "hasMedia": imageUrls.isNotEmpty,
       "createdAt": FieldValue.serverTimestamp(),
       "listingType": listingType,
@@ -134,7 +139,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     });
 
     setState(() => loading = false);
-
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Property Added Successfully")),
     );
@@ -331,94 +336,6 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  /// ===========================
-  /// TEXT FIELD WIDGET
-  /// ===========================
-  Widget darkTextField(String label, TextEditingController ctrl,
-      {TextInputType keyboard = TextInputType.text}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: TextFormField(
-        style: const TextStyle(color: Color(0xFFFFFFFF)),
-        controller: ctrl,
-        keyboardType: keyboard,
-        validator: (v) => v!.isEmpty ? "Required" : null,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: Color(0xFFD2D2DC)),
-          hintText: 'Enter $label',
-          hintStyle: const TextStyle(color: Color(0xFF99A1AF)),
-          filled: true,
-          fillColor: const Color(0x1AFFFFFF),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0x3499A1AF), width: 2),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFF9144FF), width: 2),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// ===========================
-  /// DROPDOWN WIDGET
-  /// ===========================
-  Widget darkDropdown(String label, String value, List<String> items,
-      Function(String) onChanged) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: DropdownButtonFormField(
-        value: value,
-        isExpanded: true,
-        dropdownColor: Color(0xFF181625),
-        style: const TextStyle(color: Color(0xFFFFFFFF)),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: Color(0xFFD2D2DC)),
-          filled: true,
-          fillColor: const Color(0x1AFFFFFF),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0x1A99A1AF), width: 2),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFF9144FF), width: 2),
-          ),
-        ),
-        items: items
-            .map((e) => DropdownMenuItem(
-          value: e,
-          child: Text(e, style: const TextStyle(color: Color(0xFFFFFFFF))),
-        ))
-            .toList(),
-        onChanged: (v) => onChanged(v!),
-      ),
-    );
-  }
-
-  /// ===========================
-  /// CHECKBOX WIDGET
-  /// ===========================
-  Widget darkCheckbox(String title, bool value, Function(bool) onChanged) {
-    return CheckboxListTile(
-      title: Text(title, style: const TextStyle(color: Color(0xFFFFFFFF))),
-      value: value,
-      activeColor: Color(0xFFB974FF),
-      checkColor: Color(0xFFFFFFFF),
-      onChanged: (v) => onChanged(v!),
     );
   }
 }

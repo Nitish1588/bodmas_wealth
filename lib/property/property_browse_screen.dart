@@ -1,8 +1,8 @@
 import 'package:bodmas_wealth/core/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'property_browse_card.dart';
-import 'filter_bottom_sheet.dart';
+import 'widgets/property_browse_card.dart';
+import 'widgets/filter_bottom_sheet.dart';
 import 'property_filter.dart';
 
 class PropertyBrowseScreen extends StatefulWidget {
@@ -74,7 +74,9 @@ class _PropertyBrowseScreenState extends State<PropertyBrowseScreen> {
           final allDocs = snapshot.data?.docs ?? [];
 
           if (allDocs.isEmpty) {
-            return const Center(child: Text("No Properties Found"));
+            return const Center(child: Text("No Properties Found",style: TextStyle(
+              color: Color(0xFFFFFFFF), // Sets the text color
+            )));
           }
 
           /// 🔥 APPLY FILTER ONLY WHEN USER APPLIES
@@ -129,7 +131,7 @@ class _PropertyBrowseScreenState extends State<PropertyBrowseScreen> {
       }
 
       // MEDIA
-      if (activeFilter.withMedia && d["hasMedia"] != true) {
+      if (activeFilter.readyToMove && d["readyToMove"] != true) {
         return false;
       }
 
