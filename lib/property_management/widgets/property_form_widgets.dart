@@ -4,13 +4,16 @@ Widget darkTextField(
     String label,
     TextEditingController ctrl, {
       TextInputType keyboard = TextInputType.text,
+      String? Function(String?)? validator,
+      int maxLines = 1,
     }) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 12),
     child: TextFormField(
       controller: ctrl,
       keyboardType: keyboard,
-      validator: (v) => v!.isEmpty ? "Required" : null,
+      validator: validator ?? (v) => v!.isEmpty ? "Required" : null,
+      maxLines: maxLines,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
@@ -85,6 +88,7 @@ Widget darkCheckbox(
     value: value,
     activeColor: const Color(0xFFB974FF),
     checkColor: Colors.white,
+
     onChanged: (v) => onChanged(v!),
   );
 }

@@ -3,12 +3,13 @@ import 'package:bodmas_wealth/property/property_browse_screen.dart';
 import 'package:bodmas_wealth/property_management/add_property_screen.dart';
 import 'package:bodmas_wealth/user_profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// ===========================
 /// MAIN SCREEN
 /// ===========================
 /// Root screen with BottomNavigationBar
-/// to switch between main sections of the app
+/// This is shown AFTER user is logged in
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -18,22 +19,23 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 
-  // Currently selected bottom navigation index
+  /// Currently selected bottom navigation index
   int _currentIndex = 0;
 
   /// ===========================
   /// STYLES
   /// ===========================
-  static const Color _selectedColor = Color(0xFF9144FF);       // Active tab color
-  static const Color _unSelectedColor = Color(0xFFA684FF);     // Inactive tab color
+  static const Color _selectedColor = Color(0xFF9144FF);
+  static const Color _unSelectedColor = Color(0xFFA684FF);
 
-  static const double _selectedIconSize = 24;                  // Active icon size
-  static const double _unSelectedIconSize = 20;                // Inactive icon size
+  static const double _selectedIconSize = 24;
+  static const double _unSelectedIconSize = 20;
 
   static const TextStyle _selectedLabelStyle = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w600,
   );
+
   static const TextStyle _unSelectedLabelStyle = TextStyle(
     fontSize: 11,
     fontWeight: FontWeight.w400,
@@ -42,74 +44,88 @@ class _MainScreenState extends State<MainScreen> {
   /// ===========================
   /// SCREENS
   /// ===========================
-  /// IndexedStack allows maintaining state of each screen
-  /// instead of rebuilding each time a tab is selected
+  /// IndexedStack keeps each tab state alive
   final List<Widget> _screens = const [
-    HomeScreen(),            // Home tab
-
-    PropertyBrowseScreen(),  // Property browse tab
-    AddPropertyScreen(),     // Add new property tab
-    UserProfileScreen(),     // User profile tab
-    // ProfileScreen(),       // Optional / future screen
+    HomeScreen(),
+    PropertyBrowseScreen(),
+    AddPropertyScreen(),
+    UserProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      /// ===========================
-      /// BODY
-      /// ===========================
-      /// Using IndexedStack to keep the state of each screen
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+    return PopScope(
+      // System back is handled manually
+      canPop: false,
 
-      /// ===========================
-      /// BOTTOM NAVIGATION BAR
-      /// ===========================
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index), // Change tab
+      // Android back button callback (Flutter 3.22+)
+      onPopInvokedWithResult: (didPop, result) {
 
-        // Colors
-        selectedItemColor: _selectedColor,
-        unselectedItemColor: _unSelectedColor,
+        // If not on Home tab → go to Home
+        if (_currentIndex != 0) {
+          setState(() {
+            _currentIndex = 0;
+          });
+          return;
+        }
 
-        // Label styles
-        selectedLabelStyle: _selectedLabelStyle,
-        unselectedLabelStyle: _unSelectedLabelStyle,
+        // If already on Home tab → exit app
+        SystemNavigator.pop();
+      },
 
-        // Icon sizes
-        selectedIconTheme: const IconThemeData(
-          size: _selectedIconSize,
-        ),
-        unselectedIconTheme: const IconThemeData(
-          size: _unSelectedIconSize,
+      child: Scaffold(
+        /// ===========================
+        /// BODY
+        /// ===========================
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _screens,
         ),
 
-        type: BottomNavigationBarType.fixed, // Keep all tabs visible
+        /// ===========================
+        /// BOTTOM NAVIGATION BAR
+        /// ===========================
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
 
-        // Bottom navigation items
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",       // Home tab
-          ),
+          // Colors
+          selectedItemColor: _selectedColor,
+          unselectedItemColor: _unSelectedColor,
 
-          BottomNavigationBarItem(
-            icon: Icon(Icons.square),
-            label: "Property",   // Property browse tab
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: "listing",    // Add property tab
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",    // User profile tab
-          ),
-        ],
+          // Label styles
+          selectedLabelStyle: _selectedLabelStyle,
+          unselectedLabelStyle: _unSelectedLabelStyle,
+
+          // Icon sizes
+          selectedIconTheme: const IconThemeData(size: _selectedIconSize),
+          unselectedIconTheme: const IconThemeData(size: _unSelectedIconSize),
+
+          type: BottomNavigationBarType.fixed,
+
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.square),
+              label: "Property",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.list),
+              label: "Listing",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: "Profile",
+            ),
+          ],
+        ),
       ),
     );
   }

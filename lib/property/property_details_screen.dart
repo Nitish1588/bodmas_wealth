@@ -1,3 +1,6 @@
+import 'package:bodmas_wealth/property/widgets/wishlist_button.dart';
+import 'package:bodmas_wealth/property_management/widgets/property_form_widgets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -19,9 +22,19 @@ class PropertyDetailsScreen extends StatefulWidget {
 }
 
 class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
+  late String propertyId;
+
+  @override
+  void initState() {
+    super.initState();
+    propertyId = widget.property.id; // ✅ safe
+  }
+
+
   // PageController for image slider
   final PageController _pageController = PageController();
   int _currentIndex = 0; // currently active image index
+
 
   /// Parses the `coverImage` field which can be a list or a single string
   List<String> _parseCoverImages(dynamic coverImage) {
@@ -143,6 +156,163 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
       ),
     );
   }
+  void showEnquiryDialog(
+      BuildContext context,
+      DocumentSnapshot property,
+      ) {
+    final formKey = GlobalKey<FormState>();
+
+    final nameCtrl = TextEditingController();
+    final phoneCtrl = TextEditingController();
+    final emailCtrl = TextEditingController();
+    final messageCtrl = TextEditingController();
+
+    showDialog(
+
+      context: context,
+      builder: (context) {
+
+        return AlertDialog(
+
+          backgroundColor: Color(0xFF1D1D20),
+          title: const Text("Enquiry Form",
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFFFFFF)),
+          ),
+          content: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+
+                  darkTextField("Name", nameCtrl),
+
+                  darkTextField("Mobile", phoneCtrl,
+                    keyboard: TextInputType.phone,
+                    validator: (v) {
+                      if (v == null || v.isEmpty) return "Required";
+                      if (v.length < 10) return "Invalid mobile";
+                      return null;
+                    },
+                  ),
+
+                  darkTextField("Email", emailCtrl,
+                      keyboard: TextInputType.emailAddress),
+
+                  darkTextField("Enquiry Message", messageCtrl, maxLines: 2),
+
+                ],
+              ),
+            ),
+          ),
+          actions: [
+
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 40,
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF9144FF),
+                      ),
+                      child: const Text("Cancel"),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 5),
+                Expanded(
+                  child: SizedBox(
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (!formKey.currentState!.validate()) return;
+
+                        await submitEnquiry(
+                          property: property,
+                          name: nameCtrl.text.trim(),
+                          email: emailCtrl.text.trim(),
+                          phone: phoneCtrl.text.trim(),
+                          message: messageCtrl.text.trim(),
+                        );
+
+                        if (!context.mounted) return;
+
+                        Navigator.pop(context);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Enquiry sent successfully")),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF9144FF),
+                        foregroundColor: const Color(0xFFDDDDDD),
+                      ),
+                      child: const Text("Submit"),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+          ],
+        );
+      },
+    );
+  }
+  Future<void> submitEnquiry({
+    required DocumentSnapshot property,
+    required String name,
+    required String email,
+    required String phone,
+    required String message,
+  }) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        return;
+      }
+
+      final buyerId = user.uid;
+      // 🔍 SAFETY CHECK
+      if (!property.data().toString().contains("postedById")) {
+
+        return;
+      }
+
+      final ownerId = property.get("postedById");
+
+      final enquiryId =
+          "${buyerId}_${property.id}_${DateTime.now().millisecondsSinceEpoch}";
+
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(ownerId)
+          .collection("enquiries")
+          .doc(enquiryId)
+          .set({
+        "propertyId": property.id,
+        "propertyTitle": property.get("title"),
+        "buyerId": buyerId,
+        "name": name,
+        "email": email,
+        "mobile": phone,
+        "message": message,
+        "createdAt": FieldValue.serverTimestamp(),
+      });
+
+    } catch (e) {
+      debugPrint("🔥 ERROR SAVING ENQUIRY: $e");
+    }
+  }
+
 
   @override
   void dispose() {
@@ -163,35 +333,91 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
 
       // Contact owner floating button
       floatingActionButton: Container(
-        height: 55,
+        height: 50,
         width: MediaQuery.of(context).size.width * 0.9,
         margin: EdgeInsets.only(bottom: 10),
-        child: ElevatedButton(
-          onPressed: () {}, // TODO: implement call/contact logic
-          style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-          child: Ink(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Color(0xFFA684FF), Color(0xFF9144FF)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Container(
-              alignment: Alignment.center,
-              child: Text(
-                "Contact Owner",
-                style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        child: Row(
+          children: [
+            // Enquire Now Button
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  showEnquiryDialog(context, widget.property);
+                  },
+
+
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)], // Blue gradient
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Enquire Now",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+
+            SizedBox(width: 10), // buttons ke beech gap
+
+            // Contact Owner Button
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  // TODO: implement call/contact logic
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFA684FF), Color(0xFF9144FF)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Contact Owner",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
 
       // Main content
       body: SingleChildScrollView(
@@ -199,10 +425,17 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 1),
-
+        Stack(
+          children: [
             // Property images
             coverImageWidget(d["coverImage"]),
-
+            Positioned(
+              top: 8,
+              right: 8,
+              child: WishlistButton(propertyId: propertyId),
+            ),
+        ]
+        ),
             // Property details
             Padding(
               padding: const EdgeInsets.all(15),

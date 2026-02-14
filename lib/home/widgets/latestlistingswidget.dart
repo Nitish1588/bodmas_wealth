@@ -36,7 +36,7 @@ class LatestListingsWidget extends StatelessWidget {
 
               // Optional: Format creation date
               final Timestamp? createdAt = data['createdAt'];
-              final dateString = createdAt != null
+              final _ = createdAt != null
                   ? "${createdAt.toDate().day}/${createdAt.toDate().month}/${createdAt.toDate().year}"
                   : "Unknown Date";
 

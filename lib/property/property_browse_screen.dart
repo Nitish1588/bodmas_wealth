@@ -23,6 +23,28 @@ class _PropertyBrowseScreenState extends State<PropertyBrowseScreen> {
       appBar: AppBar(
         title: const Text("Properties"),
         actions: [
+          Container(
+            width: 70, // image size
+            margin: const EdgeInsets.only(right: 15), //space right
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xFFB974FF),
+                  Color(0xFFFFFFFF),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(2),
+              child: Image.asset(
+                'assets/images/logo.webp',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.filter_alt_rounded),
             onPressed: () {

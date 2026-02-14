@@ -75,22 +75,59 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
 
-                    // =========================
-                    // USER ICON
-                    // =========================
+                    // logo here with gradient and container
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      width: 150,
+                      // height: 64,
                       decoration: BoxDecoration(
-                        color: Color(0xFFFFFFFF),   // Light white background
-                        borderRadius: BorderRadius.circular(100),
+                        gradient: const LinearGradient(
+                          colors: [
+
+                            Color(0xFFB974FF),
+                            Color(0xFFFFFFFF),
+
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      child: const Icon(
-                        Icons.person_outline_outlined,
-                        color: Color(0xFF9144FF),   // Purple icon color
-                        size: 60,
+                      child: Padding(
+                        padding: const EdgeInsets.all(2),
+                        child: Image.asset(
+                          'assets/images/logo.webp',
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
 
+
+                    const SizedBox(height: 10),
+                    const Text(
+                      "Welcome To Bodmas Wealth",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.text_2,
+                      ),
+                    ),
+
+                    // =========================
+                    // USER ICON
+                    // =========================
+                    // Container(
+                    //   padding: const EdgeInsets.all(8),
+                    //   decoration: BoxDecoration(
+                    //     color: Color(0xFFFFFFFF),   // Light white background
+                    //     borderRadius: BorderRadius.circular(100),
+                    //   ),
+                    //   child: const Icon(
+                    //     Icons.person_outline_outlined,
+                    //     color: Color(0xFF9144FF),   // Purple icon color
+                    //     size: 60,
+                    //   ),
+                    // ),
+                    //
                     const SizedBox(height: 20),
 
                     // =========================
@@ -180,6 +217,55 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 15),
 
+
+                    GestureDetector(
+                      onTap: () async {
+                        final auth = AuthService();
+
+                        try {
+                          await auth.signInWithGoogle();
+
+                          if (!context.mounted) return;
+
+                          // Navigator.pushReplacementNamed(context, AppRoutes.home);
+
+                        } catch (e) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(content: Text(e.toString())));
+                        }
+                      },
+                      child: Container(
+                        width: 55,
+                        height: 55,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.asset(
+                            "assets/images/google.jpg",
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Text(
+                      "OR",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF99A1AF),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
                     // =========================
                     // CREATE ACCOUNT BUTTON
                     // =========================

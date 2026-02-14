@@ -8,6 +8,9 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;       // Firebase Auth instance
   final FirebaseFirestore _db = FirebaseFirestore.instance; // Firestore instance
 
+
+
+
   // =========================
   // GOOGLE SIGN IN
   // =========================

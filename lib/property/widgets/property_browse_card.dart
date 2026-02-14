@@ -1,4 +1,5 @@
 import 'package:bodmas_wealth/property/property_details_screen.dart';
+import 'package:bodmas_wealth/property/widgets/wishlist_button.dart';
 import 'package:bodmas_wealth/property_management/edit_property_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -52,6 +53,9 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double labelFont = width < 360 ? 11 : 14;
+    double priceFont = width < 360 ? 13 : 18;
     // Unique ID of the property document
     final propertyId = widget.data.id;
 
@@ -110,43 +114,7 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                 Positioned(
                   top: 8,
                   right: 8,
-                  child: StreamBuilder<DocumentSnapshot>(
-                    // Listen to user's wishlist for this property
-                    stream: FirebaseFirestore.instance
-                        .collection("users")
-                        .doc(uid)
-                        .collection("wishlist")
-                        .doc(propertyId)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      // Check if property is in wishlist
-                      final isFav = snapshot.data?.exists ?? false;
-
-                      return IconButton(
-                        icon: Icon(
-                          isFav ? Icons.favorite : Icons.favorite_border,
-                          color: Colors.red,
-                          size: 20,
-                        ),
-                        onPressed: () async {
-                          final ref = FirebaseFirestore.instance
-                              .collection("users")
-                              .doc(uid)
-                              .collection("wishlist")
-                              .doc(propertyId);
-
-                          // Toggle wishlist: remove if exists, add if not
-                          if (isFav) {
-                            await ref.delete();
-                          } else {
-                            await ref.set({
-                              "createdAt": FieldValue.serverTimestamp()
-                            });
-                          }
-                        },
-                      );
-                    },
-                  ),
+                  child: WishlistButton(propertyId: propertyId),
                 ),
               ],
             ),
@@ -178,44 +146,72 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
 
                   // Listed date and location row
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Location (left)
-                      Text("${widget.data["locality"]}, ${widget.data["city"]}"),
+                      Expanded(
+                        child: Text(
+                          "${widget.data["locality"]}, ${widget.data["city"]}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: labelFont,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 2),
+
                       // Listing date (right)
                       if (createdAt != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 1.0),
-                          child: Text(
-                            "Listed on: ${formatDate(createdAt)}",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF222836),
-                              fontStyle: FontStyle.italic,
-                            ),
+                        Text(
+                          "Listed on: ${formatDate(createdAt)}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF222836),
+                            fontStyle: FontStyle.italic,
                           ),
                         ),
                     ],
                   ),
 
+
                   const SizedBox(height: 4),
 
                   /// BHK | Area | Price row
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("${widget.data["bhk"]} BHK"),
-                      Text("${widget.data["areaSqft"]} sqft"),
-                      Text(
-                        "₹${widget.data["price"]}",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF104E08),
+                      Expanded(
+                        child: Text(
+                          "${widget.data["bhk"]} BHK",
+                          style: TextStyle(fontSize: labelFont),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "${widget.data["areaSqft"]} sqft",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: labelFont),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "₹${widget.data["price"]}",
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                            fontSize: priceFont,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF104E08),
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
+
 
                   const SizedBox(height: 6),
 

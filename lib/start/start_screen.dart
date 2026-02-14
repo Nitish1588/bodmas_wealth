@@ -49,7 +49,7 @@ class StartScreen extends StatelessWidget {
             const Text(
               "Welcome To Bodmas Wealth",
               style: TextStyle(
-                fontSize: 28,
+                fontSize: 25,
                 fontWeight: FontWeight.bold,
                 color: AppColors.text_2,
               ),
@@ -92,34 +92,35 @@ class StartScreen extends StatelessWidget {
 
 
             // Button to start as a guest
-            SizedBox(
-              width: 200, // Sets the width
-              height: 50, //
-              child: ElevatedButton(
-                onPressed: () {
-                 // Navigator.pushNamed(context, AppRoutes.home);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Guest Access")),
-                  );
-                },
-
-                  style: ElevatedButton.styleFrom(
-                    // Set the background color of the button
-                    backgroundColor: Color(0xFF9144FF),
-
-                    // Set the text color (foreground color)
-                    foregroundColor: Color(0xFFDDDDDD),
-                    textStyle: TextStyle(
-                      fontSize: 15.0, //  font size here
-                      fontWeight: FontWeight.w500,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                child: const Text("Continue as Guest"),
-              ),
-            ),
+            // SizedBox(
+            //   width: 200, // Sets the width
+            //   height: 50, //
+            //   child: ElevatedButton(
+            //
+            //     onPressed: () {
+            //
+            //       // Navigator.pushNamed(context, AppRoutes.home);
+            //       ScaffoldMessenger.of(context).showSnackBar(
+            //         const SnackBar(content: Text("Guest Access")),
+            //       );
+            //     },
+            //       style: ElevatedButton.styleFrom(
+            //         // Set the background color of the button
+            //         backgroundColor: Color(0xFF9144FF),
+            //
+            //         // Set the text color (foreground color)
+            //         foregroundColor: Color(0xFFDDDDDD),
+            //         textStyle: TextStyle(
+            //           fontSize: 15.0, //  font size here
+            //           fontWeight: FontWeight.w500,
+            //         ),
+            //         shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(10.0),
+            //         ),
+            //       ),
+            //     child: const Text("Continue as Guest"),
+            //   ),
+            // ),
 
 
 

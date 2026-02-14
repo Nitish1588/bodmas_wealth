@@ -1,4 +1,4 @@
-import 'package:bodmas_wealth/home/widgets/LatestListingsWidget.dart';
+import 'package:bodmas_wealth/home/widgets/latestlistingswidget.dart';
 import 'package:bodmas_wealth/home/widgets/property_list.dart';
 import 'package:bodmas_wealth/home/widgets/property_search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,7 +63,32 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
-      appBar: AppBar(title: const Text("Home")),
+      appBar: AppBar(title: const Text("Home"),
+        actions: [
+          Container(
+            width: 70, // image size
+            margin: const EdgeInsets.only(right: 15), //space right
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xFFB974FF),
+                  Color(0xFFFFFFFF),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(2),
+              child: Image.asset(
+                'assets/images/logo.webp',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(15, 2, 15, 0),
         child: SingleChildScrollView(
@@ -268,6 +293,69 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 30),
+
+              /// Logo with gradient background
+              // Container(
+              //   width: 150,
+              //   decoration: BoxDecoration(
+              //     gradient: const LinearGradient(
+              //       colors: [
+              //         Color(0xFFB974FF),
+              //         Color(0xFFFFFFFF),
+              //       ],
+              //       begin: Alignment.topLeft,
+              //       end: Alignment.bottomRight,
+              //     ),
+              //     borderRadius: BorderRadius.circular(15),
+              //   ),
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(2),
+              //     child: Image.asset(
+              //       'assets/images/logo.webp',
+              //       fit: BoxFit.contain,
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(height: 10),
+
+              const Text(
+                "Start Your Property Hunt",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.text_2,
+                ),
+              ),
+              const SizedBox(height: 15),
+
+              /// Property Search Widget
+              PropertySearch(onSearch: onSearch),
+
+              /// Search Result Section
+              if (_showResult && _query != null && _budget != null)
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  margin: const EdgeInsets.only(top: 8),
+                  decoration: BoxDecoration(
+                    color: Color(0x08ffffff),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(10),
+                      bottom: Radius.circular(10),
+                    ),
+                  ),
+                  child: RawScrollbar(
+                    thumbColor: Color(0xFFB974FF), // Another theme color
+                    radius: Radius.circular(10),
+                    thickness: 4,
+                    thumbVisibility: false,
+                    child: PropertyList(
+                      query: _query!,
+                      budget: _budget!,
+                      type: _type,
+                    ),
+                  ),
+                ),
 
               const SizedBox(height: 20),
 
@@ -301,69 +389,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-
-              /// Logo with gradient background
-              Container(
-                width: 150,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFFB974FF),
-                      Color(0xFFFFFFFF),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(2),
-                  child: Image.asset(
-                    'assets/images/logo.webp',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              const Text(
-                "Start Your Property Hunt",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.text_2,
-                ),
-              ),
-              const SizedBox(height: 15),
-
-              /// Property Search Widget
-              PropertySearch(onSearch: onSearch),
-
-              /// Search Result Section
-              if (_showResult && _query != null && _budget != null)
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.45,
-                  margin: const EdgeInsets.only(top: 8),
-                  decoration: BoxDecoration(
-                    color: Color(0x08ffffff),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(10),
-                      bottom: Radius.circular(10),
-                    ),
-                  ),
-                  child: RawScrollbar(
-                    thumbColor: Color(0xFFB974FF), // Another theme color
-                    radius: Radius.circular(10),
-                    thickness: 4,
-                    thumbVisibility: false,
-                    child: PropertyList(
-                      query: _query!,
-                      budget: _budget!,
-                      type: _type,
-                    ),
-                  ),
-                ),
 
               const SizedBox(height: 5),
             ],
