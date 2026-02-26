@@ -185,6 +185,14 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       backgroundColor: AppColors.primary,
       appBar: AppBar(
         title: const Text("Add Property"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openEndDrawer();
+            },
+          ),
+        ],
       ),
       body: loading
           ? const Center(child: CircularProgressIndicator())

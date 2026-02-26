@@ -1,4 +1,5 @@
-import 'package:bodmas_wealth/home/widgets/latestlistingswidget.dart';
+import 'package:bodmas_wealth/home/widgets/latest_listings_widget.dart';
+import 'package:bodmas_wealth/home/widgets/property_home_search_widget.dart';
 import 'package:bodmas_wealth/home/widgets/property_list.dart';
 import 'package:bodmas_wealth/home/widgets/property_search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -65,27 +66,11 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.primary,
       appBar: AppBar(title: const Text("Home"),
         actions: [
-          Container(
-            width: 70, // image size
-            margin: const EdgeInsets.only(right: 15), //space right
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  Color(0xFFB974FF),
-                  Color(0xFFFFFFFF),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(2),
-              child: Image.asset(
-                'assets/images/logo.webp',
-                fit: BoxFit.contain,
-              ),
-            ),
+          IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openEndDrawer();
+            },
           ),
         ],
       ),
@@ -330,35 +315,9 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 15),
 
               /// Property Search Widget
-              PropertySearch(onSearch: onSearch),
-
-              /// Search Result Section
-              if (_showResult && _query != null && _budget != null)
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  margin: const EdgeInsets.only(top: 8),
-                  decoration: BoxDecoration(
-                    color: Color(0x08ffffff),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(10),
-                      bottom: Radius.circular(10),
-                    ),
-                  ),
-                  child: RawScrollbar(
-                    thumbColor: Color(0xFFB974FF), // Another theme color
-                    radius: Radius.circular(10),
-                    thickness: 4,
-                    thumbVisibility: false,
-                    child: PropertyList(
-                      query: _query!,
-                      budget: _budget!,
-                      type: _type,
-                    ),
-                  ),
-                ),
+              PropertyHomeSearchWidget(),
 
               const SizedBox(height: 20),
-
               /// Section Title: Latest Listings
               const Text(
                 "Latest Listings",

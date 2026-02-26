@@ -34,7 +34,7 @@ class PropertyBrowseCard extends StatefulWidget {
   @override
   State<PropertyBrowseCard> createState() => _PropertyBrowseCardState();
 }
-
+final uid = FirebaseAuth.instance.currentUser!.uid;
 class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
   // Current logged-in user's UID
   final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -114,7 +114,10 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                 Positioned(
                   top: 8,
                   right: 8,
-                  child: WishlistButton(propertyId: propertyId),
+                  child: roleBased(
+                    allow: ["buyer","owner"],
+                    child: WishlistButton(propertyId: propertyId),
+                  ),
                 ),
               ],
             ),
@@ -221,24 +224,28 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
                   Row(
                     children: [
                       /// Call Agent Button
-                      Expanded(
-                        child: SizedBox(
-                          height: 40,
-                          child: OutlinedButton(
-                            onPressed: () {
-                              // TODO: Call agent logic
-                            },
-                            style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: const Color(0xFF9144FF),
+                      roleBased(
+                        allow: ["buyer","owner"],
+                        child: Expanded(
+                          child: SizedBox(
+                            height: 40,
+                            child: OutlinedButton(
+                              onPressed: () {
+                                // TODO: Call agent logic
+                              },
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: const Color(0xFF9144FF),
+                              ),
+                              child: const Text("Call Agent"),
                             ),
-                            child: const Text("Call Agent"),
                           ),
                         ),
                       ),
-
-                      const SizedBox(width: 10),
-
+                      roleBased(
+                        allow: ["buyer","owner"],
+                      child:  SizedBox(width: 10),
+                      ),
                       /// View Details Button
                       Expanded(
                         child: SizedBox(
@@ -369,4 +376,29 @@ class _PropertyBrowseCardState extends State<PropertyBrowseCard> {
       child: Icon(Icons.image, size: 40),
     );
   }
+}
+
+Widget roleBased({
+  required List<String> allow,
+  required Widget child,
+}) {
+  return StreamBuilder<DocumentSnapshot>(
+    stream: FirebaseFirestore.instance
+        .collection("users")
+        .doc(uid)
+        .snapshots(),
+    builder: (context, snapshot) {
+
+      if (!snapshot.hasData) return const SizedBox();
+
+      final data = snapshot.data!.data() as Map<String, dynamic>;
+      final userType = data["userType"] ?? "";
+
+      if (allow.contains(userType)) {
+        return child;
+      }
+
+      return const SizedBox(); // hide
+    },
+  );
 }

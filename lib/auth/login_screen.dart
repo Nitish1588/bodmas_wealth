@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Text(
                       "Welcome To Bodmas Wealth",
                       style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: AppColors.text_2,
                       ),

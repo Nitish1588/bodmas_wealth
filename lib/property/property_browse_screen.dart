@@ -23,28 +23,7 @@ class _PropertyBrowseScreenState extends State<PropertyBrowseScreen> {
       appBar: AppBar(
         title: const Text("Properties"),
         actions: [
-          Container(
-            width: 70, // image size
-            margin: const EdgeInsets.only(right: 15), //space right
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  Color(0xFFB974FF),
-                  Color(0xFFFFFFFF),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(2),
-              child: Image.asset(
-                'assets/images/logo.webp',
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
+
           IconButton(
             icon: const Icon(Icons.filter_alt_rounded),
             onPressed: () {
@@ -76,6 +55,15 @@ class _PropertyBrowseScreenState extends State<PropertyBrowseScreen> {
                 });
               },
             ),
+
+
+            IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer();
+              },
+            ),
+
         ],
       ),
 
@@ -172,13 +160,31 @@ class _PropertyBrowseScreenState extends State<PropertyBrowseScreen> {
       }
 
       // LOCALITY SEARCH
+      // SMART LOCATION SEARCH (locality + city combined)
       if (activeFilter.locality != null &&
-          !d["locality"]
-              .toString()
-              .toLowerCase()
-              .contains(activeFilter.locality!.toLowerCase())) {
-        return false;
+          activeFilter.locality!.trim().isNotEmpty) {
+
+        final searchText = activeFilter.locality!.toLowerCase().trim();
+
+        final locality = (d["locality"] ?? "").toString().toLowerCase();
+        final city = (d["city"] ?? "").toString().toLowerCase();
+
+        // Combine locality + city
+        final combinedLocation = "$locality $city";
+
+        // Split search into words
+        final searchWords = searchText.split(" ");
+
+        // Every word must match somewhere
+        final matchesAll = searchWords.every(
+              (word) => combinedLocation.contains(word),
+        );
+
+        if (!matchesAll) {
+          return false;
+        }
       }
+
 
       return true;
     }).toList();
