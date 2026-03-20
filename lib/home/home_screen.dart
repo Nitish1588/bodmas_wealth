@@ -1,7 +1,5 @@
 import 'package:bodmas_wealth/home/widgets/latest_listings_widget.dart';
 import 'package:bodmas_wealth/home/widgets/property_home_search_widget.dart';
-import 'package:bodmas_wealth/home/widgets/property_list.dart';
-import 'package:bodmas_wealth/home/widgets/property_search.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
@@ -22,21 +20,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Query? _query;       // Stores Firestore query for search results
-  int? _budget;        // Stores budget from search
-  String? _type;       // Stores property type from search (BHK/RK)
-  bool _showResult = false; // Toggle to show/hide search results
 
-  /// Callback passed to PropertySearch widget
-  /// Updates query, budget, type and shows result section
-  void onSearch(Query q, int budget, String? type) {
-    setState(() {
-      _query = q;
-      _budget = budget;
-      _type = type;
-      _showResult = true;
-    });
-  }
 
   /// Firestore query to fetch latest 5 properties
   final latestPropertiesQuery = FirebaseFirestore.instance

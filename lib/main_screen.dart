@@ -2,11 +2,16 @@ import 'package:bodmas_wealth/about_us.dart';
 import 'package:bodmas_wealth/blog_articles.dart';
 import 'package:bodmas_wealth/buy/flats_apartments.dart';
 import 'package:bodmas_wealth/buy/houses_villas.dart';
+import 'package:bodmas_wealth/help.dart';
 import 'package:bodmas_wealth/home/home_screen.dart';
+import 'package:bodmas_wealth/loan/commercial_loan.dart';
+import 'package:bodmas_wealth/loan/education_loan.dart';
 import 'package:bodmas_wealth/loan/housing_loan.dart';
+import 'package:bodmas_wealth/loan/personal_loan.dart';
 import 'package:bodmas_wealth/loan/property_loans.dart';
 import 'package:bodmas_wealth/projects/new_launch_projects.dart';
 import 'package:bodmas_wealth/projects/ongoing_projects.dart';
+import 'package:bodmas_wealth/projects/upcoming_projects.dart';
 import 'package:bodmas_wealth/property/property_browse_screen.dart';
 import 'package:bodmas_wealth/property_management/add_property_screen.dart';
 import 'package:bodmas_wealth/user/user_profile_screen.dart';
@@ -65,6 +70,36 @@ class _MainScreenState extends State<MainScreen> {
               );
             },
           ),
+          MenuItem(
+            title: "Personal Loan",
+            icon: Icons.circle,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => PersonalLoanScreen()),
+              );
+            },
+          ),
+          MenuItem(
+            title: "Commercial Loan",
+            icon: Icons.circle,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => CommercialLoanScreen()),
+              );
+            },
+          ),
+          MenuItem(
+            title: "Education Loan",
+            icon: Icons.circle,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => EducationLoanScreen()),
+              );
+            },
+          ),
         ],
       ),
 
@@ -119,6 +154,16 @@ class _MainScreenState extends State<MainScreen> {
               );
             },
           ),
+          MenuItem(
+            title: "Upcoming Projects",
+            icon: Icons.circle,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => UpcomingProjectsScreen()),
+              );
+            },
+          ),
         ],
       ),
 
@@ -146,7 +191,10 @@ class _MainScreenState extends State<MainScreen> {
         title: "Help",
         icon: Icons.circle,
         onTap: () {
-
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => HelpScreen()),
+          );
         },
       ),
     ];

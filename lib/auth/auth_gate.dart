@@ -2,7 +2,6 @@ import 'package:bodmas_wealth/auth/login_screen.dart';
 import 'package:bodmas_wealth/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../start/start_screen.dart';
 
 // AuthGate widget: decides which screen to show based on Firebase Auth status
 class AuthGate extends StatelessWidget {
